@@ -25,6 +25,8 @@ const Post = require('../models/post');
 router.get('/all', (req, res, next) => {
     Post
         .find({})
+        .populate('user','name')
+        .populate('likes','name')
         .exec()
         .then(respond => {
             if (respond.length >= 1) {
@@ -50,12 +52,28 @@ router.get('/all', (req, res, next) => {
  * 
  */
 
-router.get('/create', (req, res, next) => {
-    //TODO: Create Post
-    res.status(200).json({
-        sucess: true,
-        message: 'Create Post'
-    })
+router.post('/create', (req, res, next) => {
+    const postObj = {
+        user: req.body.user,
+        body: req.body.body
+    }
+
+    const post = new Post(postObj);
+
+    post
+        .save()
+        .then(respond => {
+            if (respond) {
+                res.status(200).json({
+                    sucess: true,
+                    message: 'Post Created Successfully!'
+                })
+            } else {
+                errorJSON('Something Went Wrong!', res);
+            }
+        })
+        .catch(err => errorJSON(err, res));
+
 
 })
 
@@ -83,7 +101,7 @@ router.get('/:userId', (req, res, next) => {
                     posts: respond
                 })
             } else {
-                errorJSON('There\'s No POsts For This User Right Now!', res);
+                errorJSON('There\'s No Posts For This User Right Now!', res);
             }
         })
         .catch(err => errorJSON(err, res))
@@ -133,12 +151,28 @@ router.get('/:postId', (req, res, next) => {
 
 router.patch('/:postId/edit', (req, res, next) => {
     const postId = req.params.postId;
-    //TODO: Update Post By Post ID
-
-    res.status(200).json({
-        sucess: true,
-        message: 'Update Post By Post ID'
-    })
+    const likes = req.body.likes; // Array Of Likes
+    Post
+        .update(
+            { _id: postId },
+            {
+                $push: {
+                    likes: likes
+                }
+            }
+        )
+        .exec()
+        .then(respond => {
+            if (respond) {
+                res.status(200).json({
+                    success: true,
+                    message: 'Post Liked Successfully'
+                })
+            } else {
+                errorJSON('Something Went Wrong!', res);
+            }
+        })
+        .catch(err => errorJSON(err, res));
 
 })
 

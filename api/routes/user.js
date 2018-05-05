@@ -6,6 +6,7 @@
 
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 
 // HELPERS
 const { errorJSON } = require('../controllers/helpers/helpers');

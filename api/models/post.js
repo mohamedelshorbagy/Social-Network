@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-const LikeSchema = require('./like');
-
 const PostSchema = mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -12,7 +10,10 @@ const PostSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    likes: LikeSchema
+    likes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }]
 })
 
 
