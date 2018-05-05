@@ -7,9 +7,16 @@
 const express = require('express');
 const router = express.Router();
 
+// HELPERS
+const { errorJSON } = require('../controllers/helpers/helpers');
 
+/**
+ * 
+ * Import Models [User]
+ * 
+ */
 
-
+const User = require('../models/user');
 
 /**
  * @Method : GET
@@ -18,12 +25,24 @@ const router = express.Router();
  */
 
 router.get('/all', (req, res, next) => {
-    // TODO: Get All Users 
-
-    res.status(200).json({
-        success: true,
-        message: 'Get All Users'
-    })
+    User
+        .find({})
+        .exec()
+        .then(respond => {
+            if (respond.length >= 1) {
+                res.status(200).json({
+                    success: true,
+                    count: respond.length,
+                    users: respond
+                })
+            } else {
+                res.status(200).json({
+                    success: false,
+                    message: 'There\'s No Users Untill Now!'
+                })
+            }
+        })
+        .catch(err => errorJSON(err, res))
 })
 
 
@@ -35,51 +54,85 @@ router.get('/all', (req, res, next) => {
  */
 
 router.post('/create', (req, res, next) => {
-    // TODO: Create User 
+    User.find({ email: req.body.email })
+        .exec()
+        .then(respond => {
+            if (respond.length >= 1) {
+                errorJSON('Email is already Taken! Try Again!', res)
+            } else {
+                // Encrypting Password
+                const encryptedPassword = bcrypt.hash(req.body.password, 10, (err, hash) => {
+                    if (err) {
+                        errorJSON(err, res);
+                    }
+                    const user = new User({
+                        name: req.body.name,
+                        email: req.body.email,
+                        password: hash
+                    });
 
-    // Bride.find({ email: req.body.email })
-    //     .exec()
-    //     .then(respond => {
-    //         if (respond.length >= 1) {
-    //             res.status(409).json({
-    //                 success: false,
-    //                 error: 'This Email is already taken',
-    //             });
-    //         } else {
-    //             // Encrypting Password
-    //             const encryptedPassword = bcrypt.hash(req.body.password, 10, (err, hash) => {
-    //                 if (err) {
-    //                     res.status(500).json(helpers.errorJSON(err));
-    //                 }
-    //                 const user = new Bride({
-    //                     name: req.body.name,
-    //                     email: req.body.email,
-    //                     password: hash,
-    //                     mobile: req.body.mobile
-    //                 });
-
-    //                 user
-    //                     .save()
-    //                     .then(result => {
-    //                         if (result) {
-    //                             res.status(200).json({
-    //                                 success: true,
-    //                                 message: 'Bride Created Successfully',
-    //                                 _id: user._id
-    //                             })
-    //                         }
-    //                     })
-    //                     .catch(saveError => {
-    //                         res.status(500).json(helpers.errorJSON(saveError))
-    //                     })
-    //             })
-    //         }
-    //     })
-    //     .catch(err => {
-    //         res.status(500).json(helpers.errorJSON(err))
-    //     })
+                    user
+                        .save()
+                        .then(result => {
+                            if (result) {
+                                res.status(200).json({
+                                    success: true,
+                                    message: 'User Created Successfully',
+                                    _id: user._id
+                                })
+                            }
+                        })
+                        .catch(saveError => {
+                            errorJSON(saveError, res);
+                        })
+                })
+            }
+        })
+        .catch(err => {
+            errorJSON(err, res);
+        })
 });
 
+/**
+ * 
+ * @Method: POST
+ * @Functionality : Login User
+ * 
+ */
+
+
+router.post('/login', (req, res, next) => {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    User.find({ email: email })
+        .exec()
+        .then(respond => {
+            if (respond.length <= 0) {
+                errorJSON('User not Found', res);
+            } else {
+                bcrypt.compare(password, respond[0].password, (error, result) => {
+                    if (error) {
+                        errorJSON('Email or Password is not correct', res);
+                    }
+
+                    if (result === true) {
+                        res.status(200).json({
+                            success: true,
+                            message: 'You are Logged In Successfully',
+                            user: respond[0]
+                        });
+                    } else {
+                        errorJSON('Email or Password is not correct', res);
+                    }
+                })
+            }
+        })
+        .catch(err => {
+            errorJSON(err, res);
+        })
+
+})
 
 
 
@@ -95,12 +148,23 @@ router.post('/create', (req, res, next) => {
 
 router.get('/:id', (req, res, next) => {
     const id = req.params.id;
-    // TODO: GET User By ID
+    User
+        .findById(id)
+        .exec()
+        .then(respond => {
+            if (respond) {
+                res.status(200).json({
+                    success: true,
+                    user: respond
+                });
+            } else {
+                errorJSON('Something Went Wrong!', res);
+            }
+        })
+        .catch(err => errorJSON(err, res));
 
-    res.status(200).json({
-        sucess: true,
-        message: `Get User ${id}`
-    })
+
+
 })
 
 
@@ -115,11 +179,11 @@ router.get('/:id', (req, res, next) => {
 router.patch('/:id/edit', (req, res, next) => {
     const UpdatedObject = {};
 
-    for (let key in req.body) {
-        if (req.body[key] !== '') {
-            UpdatedObject[key] = UpdatedObject;
-        }
-    }
+    // for (let key in req.body) {
+    //     if (req.body[key] !== '') {
+    //         UpdatedObject[key] = UpdatedObject;
+    //     }
+    // }
 
     // TODO: Update User Data in Database
 
@@ -137,8 +201,20 @@ router.patch('/:id/edit', (req, res, next) => {
 router.delete('/:id', (req, res, next) => {
     const id = req.params.id;
 
-    // TODO: DELETE User From Database
-
+    User
+        .remove({ _id: id })
+        .exec()
+        .then(respond => {
+            if (respond.n >= 1) {
+                res.status(200).json({
+                    success: true,
+                    message: 'User Deleted Successfully!'
+                })
+            } else {
+                errorJSON('Something Went Wrong', res);
+            }
+        })
+        .catch(err => errorJSON(err, res));
 
 })
 

@@ -35,7 +35,7 @@ app.use(bodyParser.json());
 
 
 mongoose.connect(config.database);
-mongoose.connection.on('connected' , () => {
+mongoose.connection.on('connected', () => {
     console.log('Database Connected Successfully!');
 })
 
@@ -46,6 +46,12 @@ mongoose.connection.on('connected' , () => {
  * Routes
  * 
  */
+
+const userRoute = require('./api/routes/user');
+const postRoute = require('./api/routes/post');
+
+app.use('/api/user', userRoute);
+app.use('/api/post', postRoute);
 
 
 
