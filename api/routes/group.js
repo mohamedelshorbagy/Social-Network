@@ -51,6 +51,41 @@ router.get('/all', (req, res, next) => {
 })
 
 
+/**
+ * 
+ * 
+ * @Method: POST
+ * @Functionality: Create Group
+ * 
+ */
+
+router.post('/create', (req, res, next) => {
+    const groupData = {
+        admin: req.body.admin,
+        title: req.body.title
+    }
+
+
+    const group = new Group(groupData);
+
+
+    group
+        .save()
+        .then(respond => {
+            if (respond) {
+                res.status(200).json({
+                    success: true,
+                    message: 'Group Created Successfully!'
+                });
+            } else {
+                errorJSON('Something went wrong!', res);
+            }
+        })
+        .catch(err => errorJSON(err, res))
+
+})
+
+
 
 /**
  * 
@@ -89,7 +124,7 @@ router.get('/:groupId', (req, res, next) => {
  * 
  */
 
-router.get('/posts/:groupId', (req, res, next) => {
+router.get('/:groupId/posts', (req, res, next) => {
     const groupId = req.params.groupId;
     Post
         .find({ group: groupId })
@@ -212,7 +247,7 @@ router.patch('/addUser', (req, res, next) => {
 
 
 
-router.remove('/removeUser', (req, res, next) => {
+router.delete('/removeUser', (req, res, next) => {
     const groupId = req.body.group;
     const user = req.body.user;
 
@@ -256,7 +291,7 @@ router.remove('/removeUser', (req, res, next) => {
  * 
  */
 
-router.get('/insideGroup/:userId/:groupId', (req, res, next) => {
+router.get('/:userId/:groupId/insideGroup', (req, res, next) => {
     const user = req.params.userId.split(',');
     const groupId = req.params.groupId;
     Group

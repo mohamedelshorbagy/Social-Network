@@ -50,10 +50,12 @@ mongoose.connection.on('connected', () => {
 const userRoute = require('./api/routes/user');
 const postRoute = require('./api/routes/post');
 const groupRoute = require('./api/routes/group');
+const helpRoute = require('./api/routes/help');
 
 app.use('/api/user', userRoute);
 app.use('/api/post', postRoute);
 app.use('/api/group', groupRoute);
+app.use('/api/help', helpRoute);
 
 
 

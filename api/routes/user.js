@@ -180,13 +180,27 @@ router.get('/:id', (req, res, next) => {
 router.patch('/:id/edit', (req, res, next) => {
     const UpdatedObject = {};
 
-    // for (let key in req.body) {
-    //     if (req.body[key] !== '') {
-    //         UpdatedObject[key] = UpdatedObject;
-    //     }
-    // }
+    for (let key in req.body) {
+        if (req.body[key] !== '') {
+            UpdatedObject[key] = UpdatedObject;
+        }
+    }
 
-    // TODO: Update User Data in Database
+
+    User
+        .update({ _id: req.params.id }, { $set: UpdatedObject })
+        .exec()
+        .then(respond => {
+            if (respond) {
+                res.status(200).json({
+                    success: true,
+                    message: 'Your Profile Updated Successfully!'
+                })
+            } else {
+                errorJSON('Something went wrong!', res);
+            }
+        })
+        .catch(err => errorJSON(err, res));
 
 
 

@@ -87,7 +87,7 @@ router.post('/create', (req, res, next) => {
  * 
  */
 
-router.get('/:userId', (req, res, next) => {
+router.get('/:userId/user', (req, res, next) => {
     const userId = req.params.userId;
 
     Post
