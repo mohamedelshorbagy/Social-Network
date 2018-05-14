@@ -1,7 +1,7 @@
 /**
- * 
+ *
  * Main Modules
- * 
+ *
  */
 
 const express = require('express');
@@ -12,9 +12,9 @@ const bcrypt = require('bcryptjs');
 const { errorJSON } = require('../controllers/helpers/helpers');
 
 /**
- * 
+ *
  * Import Models [User]
- * 
+ *
  */
 
 const User = require('../models/user');
@@ -22,7 +22,7 @@ const User = require('../models/user');
 /**
  * @Method : GET
  * @Funtionality : Get All Users
- * 
+ *
  */
 
 router.get('/all', (req, res, next) => {
@@ -48,10 +48,10 @@ router.get('/all', (req, res, next) => {
 
 
 /**
- * 
+ *
  * @Method: GET
  * @Functionality : Get User By ID
- * 
+ *
  */
 
 router.post('/create', (req, res, next) => {
@@ -95,10 +95,10 @@ router.post('/create', (req, res, next) => {
 });
 
 /**
- * 
+ *
  * @Method: POST
  * @Functionality : Login User
- * 
+ *
  */
 
 
@@ -141,10 +141,10 @@ router.post('/login', (req, res, next) => {
 
 
 /**
- * 
+ *
  * @Method: GET
  * @Functionality : Get User By ID
- * 
+ *
  */
 
 router.get('/:id', (req, res, next) => {
@@ -171,10 +171,10 @@ router.get('/:id', (req, res, next) => {
 
 
 /**
- * 
+ *
  * @Method: PATCH
  * @Functionality : Update User Data
- * 
+ *
  */
 
 router.patch('/:id/edit', (req, res, next) => {
@@ -207,10 +207,10 @@ router.patch('/:id/edit', (req, res, next) => {
 })
 
 /**
- * 
+ *
  * @Method: DELETE
  * @Functionality : Delete User
- * 
+ *
  */
 
 router.delete('/:id', (req, res, next) => {
