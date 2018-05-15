@@ -2,7 +2,7 @@
 
 
 const errorJSON = (err , res) => {
-    return res.status(500).json({
+    return res.json({
         success: false,
         error: err
     })
