@@ -144,6 +144,12 @@ router.get('/:route', (req, res, next) => {
                 info: "Is User Inside Group"
 
             }, {
+                method: 'GET',
+                url: "/api/group/:groupId/mostLikedPostInGroup",
+                params: ":groupId => group.id",
+                response: "{ mostLiked: post , posts: rest of posts in group , success: true }",
+                info: "Most Liked Post In Group BY Group ID"
+            }, {
                 method: 'POST',
                 url: "/api/group/create",
                 body: "JSON: { admin: user.id, title:String }",

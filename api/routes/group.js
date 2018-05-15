@@ -314,6 +314,53 @@ router.get('/:userId/:groupId/insideGroup', (req, res, next) => {
 })
 
 
+/**
+ * 
+ * @method: GET
+ * @function: Get Most Liked Post in Group
+ * 
+ * 
+ */
+router.get('/:groupId/mostLikedPostInGroup', (req, res, next) => {
+    Post
+        .aggregate([
+            {
+                $match: { group: req.params.groupId }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'user',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            {
+                $unwind: "$user"
+            },
+            {
+                $project: {
+                    "user._id": 1,
+                    "user.name": 1,
+                    "likes": 1,
+                    "length": { $size: "$likes" }
+                }
+            },
+            { $sort: { "length": -1 } }
+        ], (err, result) => {
+            if (err) {
+                errorJSON('Something Went Wrong!', res);
+            }
+
+            let mostLikedPost = result.splice(0, 1)[0];
+            res.status(200).json({
+                success: true,
+                mostLiked: mostLikedPost,
+                posts: result
+            })
+        })
+})
+
 
 
 
