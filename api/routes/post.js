@@ -88,7 +88,7 @@ router.get('/mostLiked', (req, res, next) => {
                     "user._id": 1,
                     "user.name": 1,
                     "likes": 1,
-                    "length": { $size: "$likes" }
+                    "length": { $size: { "$ifNull": ["$likes", []] } }
                 }
             },
             { $sort: { "length": -1 } }
@@ -267,7 +267,7 @@ router.post('/:postId/doLike', (req, res, next) => {
                     .limit(1)
                     .exec()
             } else {
-                errorJSON('Something Went Wrong!', res);                
+                errorJSON('Something Went Wrong!', res);
             }
         })
         .then(respond => {
