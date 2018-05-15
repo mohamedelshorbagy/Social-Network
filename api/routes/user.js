@@ -20,7 +20,7 @@ const { errorJSON } = require('../controllers/helpers/helpers');
 const User = require('../models/user');
 
 /**
- * @Method : GET
+ * @method : GET
  * @Funtionality : Get All Users
  *
  */
@@ -49,8 +49,8 @@ router.get('/all', (req, res, next) => {
 
 /**
  *
- * @Method: GET
- * @Functionality : Get User By ID
+ * @method: GET
+ * @function : Get User By ID
  *
  */
 
@@ -96,8 +96,8 @@ router.post('/create', (req, res, next) => {
 
 /**
  *
- * @Method: POST
- * @Functionality : Login User
+ * @method: POST
+ * @function : Login User
  *
  */
 
@@ -142,12 +142,12 @@ router.post('/login', (req, res, next) => {
 
 /**
  *
- * @Method: GET
- * @Functionality : Get User By ID
+ * @method: GET
+ * @function : Get User By ID
  *
  */
 
-router.get('/:id', (req, res, next) => {
+router.get('/:id/user', (req, res, next) => {
     const id = req.params.id;
     User
         .findById(id)
@@ -172,8 +172,8 @@ router.get('/:id', (req, res, next) => {
 
 /**
  *
- * @Method: PATCH
- * @Functionality : Update User Data
+ * @method: PATCH
+ * @function : Update User Data
  *
  */
 
@@ -208,8 +208,8 @@ router.patch('/:id/edit', (req, res, next) => {
 
 /**
  * 
- * @Method: POST
- * @Functionality: Add Follower To User Followers Array
+ * @method: POST
+ * @function: Add Follower To User Followers Array
  * 
  */
 
@@ -255,8 +255,8 @@ router.post('/addFollower', (req, res, next) => {
 
 /**
  * 
- * @Method: POST
- * @Functionality: UnFollow
+ * @method: POST
+ * @function: UnFollow
  * 
  */
 
@@ -298,11 +298,79 @@ router.post('/unfollow', (req, res, next) => {
 })
 
 
+
+
+
+/**
+ * 
+ * @method: GET
+ * @function: Get Most Followed User
+ * 
+ */
+
+router.get('/mostFollowed', (req, res, next) => {
+
+
+    /* Unwind Solution */
+    // User
+    //     .aggregate([
+    //         {
+    //             $unwind: "$followers"
+    //         },
+    //         {
+    //             $group: {
+    //                 "_id": "$_id",
+    //                 "name": { "$first": "$name" },
+    //                 "followers": { "$push": "$followers" },
+    //                 "length": { "$sum": 1 }
+    //             }
+    //         },
+    //         { $sort: { "length": -1 } }
+    //     ], (err, result) => {
+    //         if (err) {
+    //             errorJSON('Something Went Wrong!', res);
+    //         }
+
+    //         let mostFollowedUser = result.splice(0, 1)[0];
+    //         res.status(200).json({
+    //             success: true,
+    //             mostFollowed: mostFollowedUser,
+    //             users: result
+    //         })
+    //     })
+
+    /* Projection Solution */
+    User
+        .aggregate([
+            {
+                $project:
+                    {
+                        "_id": 1,
+                        "name": 1,
+                        follower_count: { $size: { "$ifNull": ["$followers", []] } }
+                    }
+            }, { $sort: { "follower_count": -1 } }], (err, result) => {
+                if (err) {
+                    errorJSON(err, res);
+                }
+                let mostFollowedUser = result.splice(0, 1)[0];
+                res.status(200).json({
+                    success: true,
+                    mostFollowed: mostFollowedUser,
+                    users: result
+                })
+
+            })
+
+})
+
+
+
 /**
  * 
  *
- * @Method: DELETE
- * @Functionality : Delete User
+ * @method: DELETE
+ * @function : Delete User
  *
  */
 

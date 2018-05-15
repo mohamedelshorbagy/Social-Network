@@ -17,8 +17,8 @@ const Post = require('../models/post');
 
 /**
  * 
- * @Method: GET
- * @Functionality: Get All Posts
+ * @method: GET
+ * @function: Get All Posts
  * 
  */
 
@@ -47,8 +47,54 @@ router.get('/all', (req, res, next) => {
 
 /**
  * 
- * @Method: POST
- * @Functionality: Create Post
+ * @method: GET
+ * @function: Get Most Liked Posts 
+ * 
+ */
+
+router.get('/mostLiked', (req, res, next) => {
+    Post
+        .aggregate([
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'user',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            {
+                $unwind: "$user"
+            },
+            {
+                $project: {
+                    "user._id": 1,
+                    "user.name": 1,
+                    "likes": 1,
+                    "length": { $size: "$likes" }
+                }
+            },
+            { $sort: { "length": -1 } }
+        ], (err, result) => {
+            if (err) {
+                errorJSON('Something Went Wrong!', res);
+            }
+
+            let mostLikedPost = result.splice(0, 1)[0];
+            res.status(200).json({
+                success: true,
+                mostLiked: mostLikedPost,
+                posts: result
+            })
+        })
+})
+
+
+
+/**
+ * 
+ * @method: POST
+ * @function: Create Post
  * 
  */
 
@@ -82,8 +128,8 @@ router.post('/create', (req, res, next) => {
 
 /**
  * 
- * @Method: GET
- * @Functionality: Get Posts By User ID
+ * @method: GET
+ * @function: Get Posts By User ID
  * 
  */
 
@@ -112,8 +158,8 @@ router.get('/:userId/user', (req, res, next) => {
 
 /**
  * 
- * @Method: GET
- * @Functionality: Get Posts By Post ID
+ * @method: GET
+ * @function: Get Posts By Post ID
  * 
  */
 
@@ -144,8 +190,8 @@ router.get('/:postId', (req, res, next) => {
 
 /**
  * 
- * @Method: PATCH
- * @Functionality: UPDATE Post
+ * @method: PATCH
+ * @function: UPDATE Post
  * 
  */
 
@@ -217,8 +263,8 @@ router.patch('/:postId/removeLike', (req, res, next) => {
 
 /**
  * 
- * @Method: DELETE
- * @Functionality: DELETE Post By Post ID
+ * @method: DELETE
+ * @function: DELETE Post By Post ID
  * 
  */
 

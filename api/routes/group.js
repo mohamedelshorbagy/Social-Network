@@ -24,8 +24,8 @@ const Post = require('../models/post');
 const { errorJSON } = require('../controllers/helpers/helpers')
 /**
  * 
- * @Method: GET
- * @Functionality: Get All Groups [ Admin Authorization ]
+ * @method: GET
+ * @function: Get All Groups [ Admin Authorization ]
  * 
  */
 
@@ -54,8 +54,8 @@ router.get('/all', (req, res, next) => {
 /**
  * 
  * 
- * @Method: POST
- * @Functionality: Create Group
+ * @method: POST
+ * @function: Create Group
  * 
  */
 
@@ -89,8 +89,8 @@ router.post('/create', (req, res, next) => {
 
 /**
  * 
- * @Method: GET
- * @Functionality: Get Group By ID
+ * @method: GET
+ * @function: Get Group By ID
  * 
  */
 
@@ -119,8 +119,8 @@ router.get('/:groupId', (req, res, next) => {
 
 /**
  * 
- * @Method: GET
- * @Functionality: Get All Posts in Groups 
+ * @method: GET
+ * @function: Get All Posts in Groups 
  * 
  */
 
@@ -152,7 +152,7 @@ router.get('/:groupId/posts', (req, res, next) => {
 /**
  * 
  * 
- * @Method: Add Post To Group
+ * @method: Add Post To Group
  * @Body:
  *  { 
         user: mongoose.Shema.ObjectID,
@@ -192,7 +192,7 @@ router.post('/addPost', (req, res, next) => {
 /**
  * 
  * 
- * @Method: PATCH
+ * @method: PATCH
  * @Body:
  *  { 
         user: mongoose.Shema.ObjectID,
@@ -236,7 +236,7 @@ router.patch('/addUser', (req, res, next) => {
 /**
  * 
  * 
- * @Method: PATCH 
+ * @method: PATCH 
  * @Body:
  *  { 
         user: mongoose.Shema.ObjectID,
@@ -285,7 +285,7 @@ router.delete('/removeUser', (req, res, next) => {
 /**
  * 
  * 
- * @Method: GET 
+ * @method: GET 
  * @Params: :userId
  * 
  * 
