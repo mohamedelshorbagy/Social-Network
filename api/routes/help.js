@@ -101,19 +101,12 @@ router.get('/:route', (req, res, next) => {
                 response: "{ success: true , message: String, user: { user.data }  }",
                 info: "Create Post"
             }, {
-                method: 'PATCH',
-                url: "/api/post/:postId/addLike",
+                method: 'POST',
+                url: "/api/post/:postId/doLike",
                 params: ":postId => post.id(mogoose.id)",
                 body: "likes: { Array of User.id }",
                 response: "JSON: sent the updated fields only",
-                info: "Add Like to Post"
-            }, {
-                method: 'PATCH',
-                url: "/api/post/:postId/removeLike",
-                params: ":posId => post.id(mongoose.id)",
-                body: "likes: { Array of User.id }",
-                response: "JSON: { success: true , message: String }",
-                info: "Delete Like From Post"
+                info: "Add/Remove Like to Post"
             }, {
                 method: 'DELETE',
                 url: "/api/post/:postId",
