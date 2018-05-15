@@ -15,6 +15,23 @@ const { errorJSON } = require('../controllers/helpers/helpers');
  */
 const Post = require('../models/post');
 
+
+
+/**
+ * 
+ * 
+ * @function: Main Function For Likes
+ * 
+ */
+
+function addLike() {
+
+}
+
+function removeLike() {
+
+}
+
 /**
  * 
  * @method: GET
@@ -191,18 +208,18 @@ router.get('/:postId', (req, res, next) => {
 /**
  * 
  * @method: PATCH
- * @function: UPDATE Post
+ * @function: UPDATE LIKE
  * 
  */
 
-router.patch('/:postId/addLike', (req, res, next) => {
+router.post('/:postId/doLike', (req, res, next) => {
     const postId = req.params.postId;
     const likes = req.body.likes;
     Post
         .update(
             {
                 _id: postId,
-                likes: { "$ne": likes }
+                likes: { $ne: likes[0] }
             },
             {
                 $push: {
@@ -212,42 +229,53 @@ router.patch('/:postId/addLike', (req, res, next) => {
         )
         .exec()
         .then(respond => {
-            if (respond) {
-                res.status(200).json({
-                    success: true,
-                    message: 'Post Liked Successfully'
-                })
+            // ADD CASE
+            if (respond['nModified'] >= 1) {
+                return Post
+                    .find({ _id: postId })
+                    .limit(1)
+                    .exec()
             } else {
-                errorJSON('Something Went Wrong!', res);
+                // REMOVE CASE
+                return Post
+                    .update(
+                        {
+                            _id: postId,
+                            likes: { $in: likes }
+                        },
+                        {
+                            $pull: {
+                                likes: likes[0]
+                            }
+                        },
+                        { multi: true }
+                    )
+                    .exec()
             }
         })
-        .catch(err => errorJSON(err, res));
-
-})
-
-
-router.patch('/:postId/removeLike', (req, res, next) => {
-    const postId = req.params.postId;
-    const likes = req.body.likes;
-    Post
-        .update(
-            {
-                _id: postId,
-                likes: likes
-            },
-            {
-                $pull: {
-                    likes: likes
-                }
-            },
-            { multi: true }
-        )
-        .exec()
         .then(respond => {
-            if (respond) {
+            if (respond.length >= 1) {
                 res.status(200).json({
                     success: true,
-                    message: 'Like Removed Successfully'
+                    message: 'Post Liked Successfully',
+                    likes_count: respond[0].likes.length
+                })
+            }
+            if (respond['nModified'] >= 1) {
+                return Post
+                    .find({ _id: postId })
+                    .limit(1)
+                    .exec()
+            } else {
+                errorJSON('Something Went Wrong!', res);                
+            }
+        })
+        .then(respond => {
+            if (respond.length >= 1) {
+                res.status(200).json({
+                    success: true,
+                    message: 'Like Removed Successfully',
+                    likes_count: respond[0].likes.length
                 })
             } else {
                 errorJSON('Something Went Wrong!', res);
@@ -256,9 +284,6 @@ router.patch('/:postId/removeLike', (req, res, next) => {
         .catch(err => errorJSON(err, res));
 
 })
-
-
-
 
 
 /**
