@@ -18,16 +18,35 @@ router.get('/:route', (req, res, next) => {
                 info: "GET All Users"
             }, {
                 method: 'GET',
-                url: "/api/user/:id",
+                url: "/api/user/:id/user",
                 param: ":id => userId(mognoose.id)",
                 response: "JSON: { user: user , success: true }",
                 info: "GET User By ID"
+            }, {
+                method: 'GET',
+                url: "/api/user/mostFollowed",
+                response: "JSON: { mostFollowed: user , users: rest of users , success: true }",
+                info: "Get Most Followed User"
             }, {
                 method: 'POST',
                 url: "/api/user/create",
                 body: "JSON: { name: String , email: Email, password: String }",
                 response: "{ success: true , message: String, _id: userId  }",
                 info: "Create User"
+
+            }, {
+                method: 'POST',
+                url: "/api/user/addFollow",
+                body: "JSON: { user: objectID , following: objectID }",
+                response: "{ success: true , message: String  }",
+                info: "Follow Users"
+
+            }, {
+                method: 'POST',
+                url: "/api/user/unfollow",
+                body: "JSON: { user: objectID , following: objectID }",
+                response: "{ success: true , message: String  }",
+                info: "Unfollow Users"
 
             }, {
                 method: 'POST',
@@ -70,6 +89,11 @@ router.get('/:route', (req, res, next) => {
                 response: "{ success: true , message: String, _id: userId  }",
                 info: "Get Posts For Specific User"
 
+            }, {
+                method: 'GET',
+                url: "/api/user/mostLiked",
+                response: "JSON: { mostLiked: user , posts: rest of posts , success: true }",
+                info: "Get Most Liked Post"
             }, {
                 method: 'POST',
                 url: "/api/post/create",
