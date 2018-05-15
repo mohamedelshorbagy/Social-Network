@@ -132,15 +132,16 @@ router.get('/:groupId/posts', (req, res, next) => {
         .populate('likes', 'name')
         .exec()
         .then(respond => {
-            if (respond) {
+            if (respond.length >= 1) {
                 res.status(200).json({
                     success: true,
-                    group: respond[0]
+                    count: respond.length,
+                    posts: respond
                 })
             } else {
                 res.status(200).json({
                     sucess: false,
-                    message: 'There\'s No Group With this ID!'
+                    message: 'There\'s No Posts In this Group!'
                 })
             }
         })
