@@ -208,6 +208,98 @@ router.patch('/:id/edit', (req, res, next) => {
 
 /**
  * 
+ * @Method: POST
+ * @Functionality: Add Follower To User Followers Array
+ * 
+ */
+
+router.post('/addFollower', (req, res, next) => {
+    const currentUser = req.body.user;
+    const followerUser = req.body.following;
+
+    const addCurrentUserFollowers = User
+        .update({
+            _id: currentUser,
+            following: { "$ne": followerUser }
+        }, {
+                $push: {
+                    following: followerUser
+                }
+            })
+        .exec();
+    const addFollowerUserFollowing = User
+        .update({
+            _id: followerUser,
+            followers: { "$ne": currentUser }
+        }, {
+                $push: {
+                    followers: currentUser
+                }
+            })
+        .exec();
+
+    Promise.all([addCurrentUserFollowers, addFollowerUserFollowing])
+        .then(respond => {
+            if (respond) {
+                res.status(200).json({
+                    sucess: true,
+                    message: 'You Follow this user successfully!'
+                })
+            } else {
+                errorJSON('Something Went Wrong', res);
+            }
+        })
+        .catch(err => errorJSON(err, res));
+})
+
+
+/**
+ * 
+ * @Method: POST
+ * @Functionality: UnFollow
+ * 
+ */
+
+router.post('/unfollow', (req, res, next) => {
+    const currentUser = req.body.user;
+    const followerUser = req.body.following;
+
+    const removeCurrentUserFollowers = User
+        .update({ _id: currentUser }, {
+            $pull: {
+                following: followerUser
+            }
+        }, {
+                multi: true
+            })
+        .exec();
+    const removeFollowerUserFollowing = User
+        .update({ _id: followerUser }, {
+            $pull: {
+                followers: currentUser
+            }
+        }, {
+                multi: true
+            })
+        .exec();
+
+    Promise.all([removeCurrentUserFollowers, removeFollowerUserFollowing])
+        .then(respond => {
+            if (respond) {
+                res.status(200).json({
+                    sucess: true,
+                    message: 'You Unfollow this user successfully!'
+                })
+            } else {
+                errorJSON('Something Went Wrong', res);
+            }
+        })
+        .catch(err => errorJSON(err, res));
+})
+
+
+/**
+ * 
  * @Method: DELETE
  * @Functionality : Delete User
  * 

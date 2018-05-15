@@ -154,7 +154,10 @@ router.patch('/:postId/addLike', (req, res, next) => {
     const likes = req.body.likes;
     Post
         .update(
-            { _id: postId },
+            {
+                _id: postId,
+                likes: { "$ne": likes }
+            },
             {
                 $push: {
                     likes: likes
@@ -182,7 +185,10 @@ router.patch('/:postId/removeLike', (req, res, next) => {
     const likes = req.body.likes;
     Post
         .update(
-            { _id: postId },
+            {
+                _id: postId,
+                likes: likes
+            },
             {
                 $pull: {
                     likes: likes

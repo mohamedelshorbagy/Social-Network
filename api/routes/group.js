@@ -292,7 +292,7 @@ router.delete('/removeUser', (req, res, next) => {
  */
 
 router.get('/:userId/:groupId/insideGroup', (req, res, next) => {
-    const user = req.params.userId.split(',');
+    const user = req.params.userId;
     const groupId = req.params.groupId;
     Group
         .find({ _id: groupId, users: user })
